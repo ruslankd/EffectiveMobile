@@ -7,4 +7,6 @@
     <string name="messages_label">Сообщения</string>
     <string name="profile_label">Профиль</string>
 
+    <string name="search_hint">Должность, ключевые слова</string>
+
 </resources>
