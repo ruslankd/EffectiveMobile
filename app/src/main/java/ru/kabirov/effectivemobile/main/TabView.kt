@@ -29,8 +29,8 @@ fun TabView(navController: NavHostController) {
         TopLevelRoute(
             name = stringResource(R.string.favorites_label),
             route = Favorites,
-            selectedIconId = R.drawable.favorites,
-            unselectedIconId = R.drawable.favorites
+            selectedIconId = R.drawable.heart,
+            unselectedIconId = R.drawable.heart
         ),
         TopLevelRoute(
             name = stringResource(R.string.responses_label),

@@ -42,7 +42,7 @@ import ru.kabirov.effectivemobile.ui.theme.White
 @Composable
 fun SearchTopAppBar(searchHint: String) {
     val context = LocalContext.current
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
 //        OutlinedTextField(
 //            value = "",
 //            onValueChange = {},
