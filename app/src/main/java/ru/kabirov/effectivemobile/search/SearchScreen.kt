@@ -74,12 +74,13 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel()) {
                 vacancies = vm.baseApiObject.value.vacancies,
                 vacanciesCount = vm.getVacanciesCount(),
                 currentlyViewingString = { vm.getCurrentlyViewingString(it) },
-                publishedDate = {vm.getDateFormat(it)}
+                publishedDate = { vm.getDateFormat(it) }
             )
             BlueButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
                 onClick = {}) {
                 Text(
                     text = stringResource(

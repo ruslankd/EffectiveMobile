@@ -1,6 +1,7 @@
 package ru.kabirov.effectivemobile.ui
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,7 +23,7 @@ fun BlueButton(
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Blue,
@@ -43,7 +44,7 @@ fun GreenButton(
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier.height(32.dp),
         shape = RoundedCornerShape(50.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Green,

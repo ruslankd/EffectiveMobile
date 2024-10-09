@@ -1,20 +1,32 @@
 package ru.kabirov.effectivemobile.main
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.kabirov.effectivemobile.R
+import ru.kabirov.effectivemobile.ui.theme.Blue
+import ru.kabirov.effectivemobile.ui.theme.Grey1
+import ru.kabirov.effectivemobile.ui.theme.Grey4
 import ru.kabirov.effectivemobile.ui.theme.Shadows
+import ru.kabirov.effectivemobile.ui.theme.TabText
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -52,19 +64,35 @@ fun TabView(navController: NavHostController) {
         ),
     )
 
-    NavigationBar(containerColor = Shadows) {
+    NavigationBar(modifier = Modifier.drawWithContent {
+        drawContent()
+        drawLine(
+            color = Grey1,
+            start = Offset(0f, 0f),
+            end = Offset(size.width, 0f),
+            strokeWidth = 1.dp.toPx(),
+        )
+    }, containerColor = Shadows, contentColor = Grey4) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         topLevelRoutes.forEach { topLevelRoute ->
             NavigationBarItem(
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Blue,
+                    selectedTextColor = Blue,
+                    indicatorColor = Color.Transparent,
+                    unselectedIconColor = Grey4,
+                    unselectedTextColor = Grey4
+                ),
                 icon = {
                     Icon(
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(id = topLevelRoute.selectedIconId),
                         contentDescription = null
                     )
                 },
-                label = { Text(topLevelRoute.name) },
-                selected = currentDestination?.hierarchy?.any { it.route == topLevelRoute.name } == true,
+                label = { Text(text = topLevelRoute.name, style = TabText) },
+                selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
                 onClick = {
                     navController.navigate(topLevelRoute.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
@@ -77,4 +105,5 @@ fun TabView(navController: NavHostController) {
             )
         }
     }
+//    }
 }
