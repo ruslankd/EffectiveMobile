@@ -1,5 +1,6 @@
 package ru.kabirov.effectivemobile.search
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,13 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel()) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(16.dp))
-        SearchTopAppBar(searchHint = stringResource(R.string.search_hint))
+        SearchTopAppBar(
+            searchHint = stringResource(R.string.search_hint),
+            searchString = vm.searchString.collectAsState().value,
+            searchStringValueChange = { vm.searchStringValueChange(it) },
+            onLeadingIconClick = { vm.onLeadingIconClick() },
+            vm.isAllVacancies.collectAsState().value
+        )
         Spacer(modifier = Modifier.height(16.dp))
         if (vm.isAllVacancies.collectAsState().value) {
             VacanciesByCompliance(
@@ -67,21 +74,25 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel()) {
                 style = Title2,
                 color = White
             )
-            VacanciesColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp),
-                vacancies = vm.baseApiObject.value.vacancies,
-                vacanciesCount = vm.getVacanciesCount(),
-                currentlyViewingString = { vm.getCurrentlyViewingString(it) },
-                publishedDate = { vm.getDateFormat(it) }
-            )
+        }
+        VacanciesColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp),
+            vacancies = vm.baseApiObject.value.vacancies,
+            vacanciesCount = vm.getVacanciesCount(),
+            currentlyViewingString = { vm.getCurrentlyViewingString(it) },
+            publishedDate = { vm.getDateFormat(it) }
+        )
+        if (!vm.isAllVacancies.collectAsState().value) {
             BlueButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp),
-                onClick = {}) {
+                onClick = {
+                    vm.onExpandBtnClick()
+                }) {
                 Text(
                     text = stringResource(
                         R.string.remaining_vacancies,

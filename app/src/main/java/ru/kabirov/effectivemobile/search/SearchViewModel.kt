@@ -41,12 +41,15 @@ class SearchViewModel @Inject constructor(
     private val _isAllVacancies = MutableStateFlow(false)
     val isAllVacancies: StateFlow<Boolean> = _isAllVacancies
 
+    private val _searchString = MutableStateFlow("")
+    val searchString: StateFlow<String> = _searchString
+
     init {
         getVacanciesAndOffers()
     }
 
     companion object {
-        val DEFAULT_VACANCIES_COUNT = 3
+        const val DEFAULT_VACANCIES_COUNT = 3
     }
 
 
@@ -64,6 +67,26 @@ class SearchViewModel @Inject constructor(
     fun onOffersClick(link: String) {
         viewModelScope.launch {
             _events.emit(SearchEvents.ToBrowser(link))
+        }
+    }
+
+    fun onLeadingIconClick() {
+        if (isAllVacancies.value) {
+            viewModelScope.launch {
+                _isAllVacancies.emit(false)
+            }
+        }
+    }
+
+    fun onExpandBtnClick() {
+        viewModelScope.launch {
+            _isAllVacancies.emit(true)
+        }
+    }
+
+    fun searchStringValueChange(searchString: String) {
+        viewModelScope.launch {
+            _searchString.emit(searchString)
         }
     }
 
@@ -142,7 +165,10 @@ class SearchViewModel @Inject constructor(
     fun getDateFormat(dateString: String?): String {
         dateString?.let {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd")
-            val targetFormat = SimpleDateFormat("d MMMM", Locale.Builder().setLanguage("ru").setScript("Cyrl").build())
+            val targetFormat = SimpleDateFormat(
+                "d MMMM",
+                Locale.Builder().setLanguage("ru").setScript("Cyrl").build()
+            )
             val date = originalFormat.parse(it)
             date?.let {
                 return targetFormat.format(date)
@@ -150,4 +176,5 @@ class SearchViewModel @Inject constructor(
         }
         return ""
     }
+
 }
