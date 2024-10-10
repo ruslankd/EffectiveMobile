@@ -32,7 +32,10 @@ import ru.kabirov.effectivemobile.ui.theme.Title2
 import ru.kabirov.effectivemobile.ui.theme.White
 
 @Composable
-fun SearchScreen(vm: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    onNavigateToVacancyDetail: (String) -> Unit,
+    vm: SearchViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
@@ -82,7 +85,8 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel()) {
             vacancies = vm.baseApiObject.value.vacancies,
             vacanciesCount = vm.getVacanciesCount(),
             currentlyViewingString = { vm.getCurrentlyViewingString(it) },
-            publishedDate = { vm.getDateFormat(it) }
+            publishedDate = { vm.getDateFormat(it) },
+            onNavigateToVacancyDetail = onNavigateToVacancyDetail
         )
         if (!vm.isAllVacancies.collectAsState().value) {
             BlueButton(

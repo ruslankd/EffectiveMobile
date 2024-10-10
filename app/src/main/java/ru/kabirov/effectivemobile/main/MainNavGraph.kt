@@ -16,7 +16,7 @@ import ru.kabirov.effectivemobile.search.SearchScreen
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onNavigateToVacancyDetail: (String) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -24,7 +24,7 @@ fun MainNavGraph(
     ) {
         NavHost(navController = navController, startDestination = Search) {
             composable<Search> {
-                SearchScreen()
+                SearchScreen(onNavigateToVacancyDetail)
             }
 
             composable<Favorites> {

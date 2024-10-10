@@ -12,15 +12,16 @@ data class TopLevelRoute<T : Any>(
 
 @Serializable
 object Search
-
 @Serializable
 object Favorites
-
 @Serializable
 object Responses
-
 @Serializable
 object Messages
-
 @Serializable
 object Profile
+
+@Serializable
+object AppScaffold
+@Serializable
+data class VacancyDetail(val title: String)

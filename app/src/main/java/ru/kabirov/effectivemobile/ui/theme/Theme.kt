@@ -14,7 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Shadows
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,7 +36,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun EffectiveMobileTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = true,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit

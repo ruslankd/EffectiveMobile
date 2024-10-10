@@ -3,6 +3,7 @@ package ru.kabirov.effectivemobile.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -25,7 +26,6 @@ import ru.kabirov.effectivemobile.R
 import ru.kabirov.effectivemobile.ui.theme.Blue
 import ru.kabirov.effectivemobile.ui.theme.Grey1
 import ru.kabirov.effectivemobile.ui.theme.Grey4
-import ru.kabirov.effectivemobile.ui.theme.Shadows
 import ru.kabirov.effectivemobile.ui.theme.TabText
 
 @SuppressLint("RestrictedApi")
@@ -72,7 +72,7 @@ fun TabView(navController: NavHostController) {
             end = Offset(size.width, 0f),
             strokeWidth = 1.dp.toPx(),
         )
-    }, containerColor = Shadows, contentColor = Grey4) {
+    }, containerColor = MaterialTheme.colorScheme.background, contentColor = Grey4) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         topLevelRoutes.forEach { topLevelRoute ->

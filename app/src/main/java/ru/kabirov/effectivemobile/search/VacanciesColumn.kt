@@ -41,7 +41,8 @@ fun VacanciesColumn(
     vacancies: ArrayList<Vacancies>,
     vacanciesCount: Int,
     currentlyViewingString: (Int) -> String,
-    publishedDate: (String?) -> (String)
+    publishedDate: (String?) -> (String),
+    onNavigateToVacancyDetail: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -49,7 +50,7 @@ fun VacanciesColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(vacancies.take(vacanciesCount)) {
-            VacanciesItem(it, currentlyViewingString, publishedDate)
+            VacanciesItem(it, currentlyViewingString, publishedDate, onNavigateToVacancyDetail)
         }
     }
 }
@@ -58,16 +59,17 @@ fun VacanciesColumn(
 fun VacanciesItem(
     vacancies: Vacancies,
     currentlyViewingString: (Int) -> String,
-    publishedDate: (String?) -> (String)
+    publishedDate: (String?) -> (String),
+    onNavigateToVacancyDetail: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Grey1, RoundedCornerShape(8.dp))
-            .padding(16.dp)
             .clickable {
-
+                onNavigateToVacancyDetail(vacancies.title ?: "")
             }
+            .padding(16.dp)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             vacancies.lookingNumber?.let {
