@@ -1,4 +1,4 @@
-package ru.kabirov.effectivemobile.api.dto
+package ru.kabirov.network.api.dto
 
 import com.google.gson.annotations.SerializedName
 

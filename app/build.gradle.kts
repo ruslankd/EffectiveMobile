@@ -53,11 +53,12 @@ android {
 }
 
 dependencies {
+    // Network Module
+    implementation(project(":network"))
+    implementation(project(":database"))
+
     // AppCompatActivity
     implementation(libs.androidx.appcompat)
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
 
     // Hilt
     implementation(libs.hilt.android)

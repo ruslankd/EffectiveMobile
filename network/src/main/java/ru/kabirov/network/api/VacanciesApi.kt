@@ -1,4 +1,4 @@
-package ru.kabirov.effectivemobile.api
+package ru.kabirov.network.api
 
 import okhttp3.ResponseBody
 import retrofit2.Response

@@ -15,4 +15,6 @@
     <string name="published">Опубликовано %s</string>
     <string name="reply">Откликнуться</string>
 
+    <string name="favorites">Избранное</string>
+
 </resources>

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.kabirov.effectivemobile.R
-import ru.kabirov.effectivemobile.api.dto.Vacancies
 import ru.kabirov.effectivemobile.ui.GreenButton
 import ru.kabirov.effectivemobile.ui.theme.Blue
 import ru.kabirov.effectivemobile.ui.theme.ButtonText2
@@ -34,23 +32,31 @@ import ru.kabirov.effectivemobile.ui.theme.Grey4
 import ru.kabirov.effectivemobile.ui.theme.Text1
 import ru.kabirov.effectivemobile.ui.theme.Title3
 import ru.kabirov.effectivemobile.ui.theme.White
+import ru.kabirov.network.api.dto.Vacancies
 
 @Composable
 fun VacanciesColumn(
     modifier: Modifier = Modifier,
-    vacancies: ArrayList<Vacancies>,
+    vacancies: List<Vacancies>,
     vacanciesCount: Int,
     currentlyViewingString: (Int) -> String,
     publishedDate: (String?) -> (String),
-    onNavigateToVacancyDetail: (String) -> Unit
+    onNavigateToVacancyDetail: (String) -> Unit,
+    onFavoriteClick: (Vacancies) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(bottom = 24.dp, top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(vacancies.take(vacanciesCount)) {
-            VacanciesItem(it, currentlyViewingString, publishedDate, onNavigateToVacancyDetail)
+        items(items = vacancies.take(vacanciesCount), key = {vacancy -> vacancy.id!!}) {
+            VacanciesItem(
+                vacancies = it,
+                currentlyViewingString = currentlyViewingString,
+                publishedDate = publishedDate,
+                onNavigateToVacancyDetail = onNavigateToVacancyDetail,
+                onFavoriteClick = onFavoriteClick
+            )
         }
     }
 }
@@ -60,7 +66,8 @@ fun VacanciesItem(
     vacancies: Vacancies,
     currentlyViewingString: (Int) -> String,
     publishedDate: (String?) -> (String),
-    onNavigateToVacancyDetail: (String) -> Unit
+    onNavigateToVacancyDetail: (String) -> Unit,
+    onFavoriteClick: (Vacancies) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -119,7 +126,11 @@ fun VacanciesItem(
             }
         }
         Icon(
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .clickable {
+                    onFavoriteClick(vacancies)
+                },
             painter = painterResource(if (vacancies.isFavorite != null && vacancies.isFavorite!!) R.drawable.heart_active else R.drawable.heart),
             contentDescription = null,
             tint = if (vacancies.isFavorite != null && vacancies.isFavorite!!) Blue else Grey4

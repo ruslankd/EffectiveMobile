@@ -1,39 +1,40 @@
 package ru.kabirov.effectivemobile.search
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import ru.kabirov.effectivemobile.api.VacanciesApi
-import ru.kabirov.effectivemobile.api.dto.Base
-import ru.kabirov.effectivemobile.main.logd
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import ru.kabirov.database.StoredVacanciesRepositoryImpl
+import ru.kabirov.network.NetworkRepositoryImpl
+import ru.kabirov.network.api.dto.Offers
+import ru.kabirov.network.api.dto.Vacancies
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
 
-@SuppressLint("MutableCollectionMutableState")
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    @ApplicationContext val context: Context,
-    private val vacanciesApi: VacanciesApi
+    private val networkRepository: NetworkRepositoryImpl,
+    private val storedVacancyRepository: StoredVacanciesRepositoryImpl
 ) : ViewModel() {
-    val baseApiObject = mutableStateOf(Base())
+
+    private val _favoritesVacancies = MutableStateFlow<List<Vacancies>>(emptyList())
+    val favoritesVacancies = _favoritesVacancies.asStateFlow()
+
+    private val _vacancies = MutableStateFlow<List<Vacancies>>(emptyList())
+    val vacancies = _vacancies.asStateFlow()
+
+    private val vacanciesFlow = storedVacancyRepository.getAllVacancies()
+
+    val offersState = mutableStateOf(listOf<Offers>())
 
     private val _events = MutableSharedFlow<SearchEvents>()
     val events: SharedFlow<SearchEvents> = _events
@@ -45,23 +46,29 @@ class SearchViewModel @Inject constructor(
     val searchString: StateFlow<String> = _searchString
 
     init {
-        getVacanciesAndOffers()
+        viewModelScope.launch {
+            launch {
+                getVacanciesAndOffers()
+            }
+            launch {
+                vacanciesFlow.collectLatest { items ->
+                    _favoritesVacancies.tryEmit(items.filter { it.isFavorite ?: false }
+                        .sortedBy { it.id })
+                    _vacancies.tryEmit(items.sortedBy { it.id })
+                }
+            }
+        }
     }
 
     companion object {
         const val DEFAULT_VACANCIES_COUNT = 3
     }
 
-
-    fun setAllVacancies(enabled: Boolean) {
-        _isAllVacancies.value = enabled
-    }
-
     fun getVacanciesCount(): Int =
         if (!isAllVacancies.value) {
             DEFAULT_VACANCIES_COUNT
         } else {
-            baseApiObject.value.vacancies.size
+            vacancies.value.size
         }
 
     fun onOffersClick(link: String) {
@@ -84,56 +91,27 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun onFavoriteClick(vacancy: Vacancies) {
+        viewModelScope.launch {
+            storedVacancyRepository.insertVacancyWithReplace(vacancy.copy(isFavorite = vacancy.isFavorite?.not()))
+        }
+    }
+
     fun searchStringValueChange(searchString: String) {
         viewModelScope.launch {
             _searchString.emit(searchString)
         }
     }
 
-    fun getVacanciesAndOffers() {
-        viewModelScope.launch {
-            val apiFilePath = "${context.filesDir.absolutePath}${File.separator}api.json"
-            if (!File(apiFilePath).exists()) {
-                vacanciesApi.downloadFile().body()?.let {
-                    context.logd("download file")
-                    saveFile(it, apiFilePath)
-                }
+    suspend fun getVacanciesAndOffers() {
+        networkRepository.getBaseDTO().apply {
+            vacancies.map { vacancy ->
+                storedVacancyRepository.insertVacancy(vacancy)
             }
-            baseApiObject.value = getBaseFromFile(apiFilePath)
         }
     }
 
-    private fun saveFile(body: ResponseBody, path: String): String {
-        var input: InputStream? = null
-        try {
-            input = body.byteStream()
-            val fos = FileOutputStream(path)
-            fos.use { output ->
-                val buffer = ByteArray(4 * 1024)
-                var read: Int
-                while (input.read(buffer).also { read = it } != -1) {
-                    output.write(buffer, 0, read)
-                }
-                output.flush()
-            }
-            return path
-        } catch (e: Exception) {
-            Log.e("saveFile", e.toString())
-        } finally {
-            input?.close()
-        }
-        return ""
-    }
-
-    private fun getBaseFromFile(apiFilePath: String): Base {
-        val fis = FileInputStream(apiFilePath)
-        return Gson().fromJson(
-            fis.bufferedReader().use { it.readText() },
-            object : TypeToken<Base>() {}.type
-        )
-    }
-
-    fun getVacanciesString(num: Int = baseApiObject.value.vacancies.size): String {
+    fun getVacanciesString(num: Int = vacancies.value.size): String {
         val preLastDigit: Int = num % 100 / 10
 
         if (preLastDigit == 1) {
@@ -176,5 +154,4 @@ class SearchViewModel @Inject constructor(
         }
         return ""
     }
-
 }

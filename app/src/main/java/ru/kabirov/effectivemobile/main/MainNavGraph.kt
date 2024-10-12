@@ -28,7 +28,7 @@ fun MainNavGraph(
             }
 
             composable<Favorites> {
-                FavoritesScreen()
+                FavoritesScreen(onNavigateToVacancyDetail)
             }
 
             composable<Responses> {

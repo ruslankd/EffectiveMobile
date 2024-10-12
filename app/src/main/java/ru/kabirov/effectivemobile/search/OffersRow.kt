@@ -17,15 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.kabirov.effectivemobile.R
-import ru.kabirov.effectivemobile.api.dto.Base
-import ru.kabirov.effectivemobile.api.dto.Offers
 import ru.kabirov.effectivemobile.ui.theme.Blue
 import ru.kabirov.effectivemobile.ui.theme.DarkBlue
 import ru.kabirov.effectivemobile.ui.theme.DarkGreen
@@ -34,15 +31,16 @@ import ru.kabirov.effectivemobile.ui.theme.Grey1
 import ru.kabirov.effectivemobile.ui.theme.Text1
 import ru.kabirov.effectivemobile.ui.theme.Title4
 import ru.kabirov.effectivemobile.ui.theme.White
+import ru.kabirov.network.api.dto.Offers
 
 @Composable
-fun OffersRow(baseApiObject: MutableState<Base>, onItemClick: (String) -> Unit) {
+fun OffersRow(offers: List<Offers>, onItemClick: (String) -> Unit) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(baseApiObject.value.offers) { item ->
+        items(offers) { item ->
             OffersItem(item, onItemClick)
         }
     }

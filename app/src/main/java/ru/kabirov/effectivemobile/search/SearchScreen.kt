@@ -1,6 +1,5 @@
 package ru.kabirov.effectivemobile.search
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import ru.kabirov.effectivemobile.R
 import ru.kabirov.effectivemobile.ui.BlueButton
@@ -67,7 +67,7 @@ fun SearchScreen(
                 vm.getVacanciesString()
             )
         } else {
-            OffersRow(vm.baseApiObject, onItemClick = {
+            OffersRow(vm.offersState.value, onItemClick = {
                 vm.onOffersClick(it)
             })
             Spacer(modifier = Modifier.height(22.dp))
@@ -82,11 +82,12 @@ fun SearchScreen(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp),
-            vacancies = vm.baseApiObject.value.vacancies,
+            vacancies = vm.vacancies.collectAsStateWithLifecycle().value,
             vacanciesCount = vm.getVacanciesCount(),
             currentlyViewingString = { vm.getCurrentlyViewingString(it) },
             publishedDate = { vm.getDateFormat(it) },
-            onNavigateToVacancyDetail = onNavigateToVacancyDetail
+            onNavigateToVacancyDetail = onNavigateToVacancyDetail,
+            onFavoriteClick = { vm.onFavoriteClick(it) }
         )
         if (!vm.isAllVacancies.collectAsState().value) {
             BlueButton(
