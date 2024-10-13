@@ -105,6 +105,7 @@ class SearchViewModel @Inject constructor(
 
     suspend fun getVacanciesAndOffers() {
         networkRepository.getBaseDTO().apply {
+            offersState.value = offers
             vacancies.map { vacancy ->
                 storedVacancyRepository.insertVacancy(vacancy)
             }

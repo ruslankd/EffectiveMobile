@@ -2,6 +2,8 @@ package ru.kabirov.effectivemobile.main
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -17,20 +19,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.kabirov.effectivemobile.R
+import ru.kabirov.effectivemobile.search.SearchViewModel
 import ru.kabirov.effectivemobile.ui.theme.Blue
 import ru.kabirov.effectivemobile.ui.theme.Grey1
 import ru.kabirov.effectivemobile.ui.theme.Grey4
+import ru.kabirov.effectivemobile.ui.theme.Number
+import ru.kabirov.effectivemobile.ui.theme.Red
 import ru.kabirov.effectivemobile.ui.theme.TabText
+import ru.kabirov.effectivemobile.ui.theme.White
 
 @SuppressLint("RestrictedApi")
 @Composable
-fun TabView(navController: NavHostController) {
+fun TabView(
+    navController: NavHostController,
+    vm: SearchViewModel = hiltViewModel()
+) {
     val topLevelRoutes = listOf(
         TopLevelRoute(
             name = stringResource(R.string.search_label),
@@ -85,11 +96,33 @@ fun TabView(navController: NavHostController) {
                     unselectedTextColor = Grey4
                 ),
                 icon = {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = topLevelRoute.selectedIconId),
-                        contentDescription = null
-                    )
+                    if (topLevelRoute.route is Favorites) {
+                        BadgedBox(badge = {
+                            if (vm.favoritesVacancies.collectAsStateWithLifecycle().value.isNotEmpty()) {
+                                Badge(
+                                    containerColor = Red,
+                                    contentColor = White
+                                ) {
+                                    Text(
+                                        text = vm.favoritesVacancies.collectAsStateWithLifecycle().value.size.toString(),
+                                        style = Number
+                                    )
+                                }
+                            }
+                        }) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(id = topLevelRoute.selectedIconId),
+                                contentDescription = null
+                            )
+                        }
+                    } else {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(id = topLevelRoute.selectedIconId),
+                            contentDescription = null
+                        )
+                    }
                 },
                 label = { Text(text = topLevelRoute.name, style = TabText) },
                 selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
