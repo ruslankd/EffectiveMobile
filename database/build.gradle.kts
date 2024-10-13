@@ -12,7 +12,7 @@ android {
     defaultConfig {
         minSdk = 24
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "ru.kabirov.database.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
 
         kapt {
@@ -50,6 +50,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
