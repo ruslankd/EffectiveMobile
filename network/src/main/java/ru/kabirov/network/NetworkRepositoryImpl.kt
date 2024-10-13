@@ -20,8 +20,10 @@ class NetworkRepositoryImpl @Inject constructor(
     NetworkRepository {
     override suspend fun getBaseDTO(): Base {
         val apiFilePath = "${context.filesDir.absolutePath}${File.separator}api.json"
-        vacanciesApi.downloadFile().body()?.let {
-            saveFile(it, apiFilePath)
+        if (!File(apiFilePath).exists()) {
+            vacanciesApi.downloadFile().body()?.let {
+                saveFile(it, apiFilePath)
+            }
         }
 
         return getBaseFromFile(apiFilePath)
